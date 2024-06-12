@@ -61,7 +61,8 @@ export class ChatService {
     });
 
     const chats = await this.getChats(chatsIds);
-    return chats;
+    const sortedChats = this.sortEmptyChats(chats);
+    return sortedChats;
   }
 
   async isChatExist(chatId: number): Promise<boolean> {
@@ -99,6 +100,18 @@ export class ChatService {
         [Sequelize.fn('max', Sequelize.col('messages.created_at')), 'DESC'],
       ],
     });
+
     return chats;
+  }
+
+  sortEmptyChats(chats: Chat[]) {
+    const sortedChats = chats.sort((a, b) => {
+      // чаты без сообщений в конец массива
+      if (a.messages.length === 0 || b.messages.length === 0) {
+        return -1;
+      } else return 0;
+    });
+
+    return sortedChats;
   }
 }
